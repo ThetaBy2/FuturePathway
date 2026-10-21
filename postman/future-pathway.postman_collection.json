@@ -1,0 +1,53 @@
+{
+  "info": {
+    "name": "Future Pathway API",
+    "description": "Campus placement & career-readiness platform. Flow: register student + company → login each → paste JWTs into studentToken/companyToken/adminToken → run module by module.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080/api"},
+    {"key": "studentToken", "value": ""},
+    {"key": "companyToken", "value": ""},
+    {"key": "collegeToken", "value": ""},
+    {"key": "adminToken", "value": ""},
+    {"key": "jobId", "value": "1"},
+    {"key": "studentId", "value": "1"},
+    {"key": "skillId", "value": "1"},
+    {"key": "processId", "value": "1"}
+  ],
+  "item": [
+    {"name": "Auth", "item": [
+      {"name": "Register student", "request": {"method": "POST", "url": "{{baseUrl}}/auth/register/student", "body": {"mode": "raw", "raw": "{\"name\":\"Asha Rao\",\"email\":\"asha@example.com\",\"password\":\"Passw0rd1\",\"rollNo\":\"CSE2026001\",\"branch\":\"CSE\",\"batchYear\":2026,\"cgpa\":8.6,\"backlogCount\":0,\"resumeText\":\"Java developer. Built a Spring Boot placement portal with JWT auth and PostgreSQL.\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Register company", "request": {"method": "POST", "url": "{{baseUrl}}/auth/register/company", "body": {"mode": "raw", "raw": "{\"contactName\":\"Ravi HR\",\"email\":\"hr@acme.io\",\"password\":\"Passw0rd1\",\"companyName\":\"Acme Tech\",\"industryDomain\":\"SaaS\",\"website\":\"https://acme.io\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Login (any role)", "request": {"method": "POST", "url": "{{baseUrl}}/auth/login", "body": {"mode": "raw", "raw": "{\"email\":\"asha@example.com\",\"password\":\"Passw0rd1\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Register college (ADMIN)", "request": {"method": "POST", "url": "{{baseUrl}}/auth/register/college", "header": [{"key": "Authorization", "value": "Bearer {{adminToken}}"}], "body": {"mode": "raw", "raw": "{\"contactName\":\"TPO\",\"email\":\"tpo@college.edu\",\"password\":\"Passw0rd1\",\"collegeName\":\"Pune Institute of Tech\",\"tpoContactEmail\":\"tpo@college.edu\"}", "options": {"raw": {"language": "json"}}}}}
+    ]},
+    {"name": "A - Student", "item": [
+      {"name": "Get my profile", "request": {"method": "GET", "url": "{{baseUrl}}/students/me", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}]}},
+      {"name": "Update my profile", "request": {"method": "PUT", "url": "{{baseUrl}}/students/me", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}], "body": {"mode": "raw", "raw": "{\"cgpa\":8.7,\"cvUrl\":\"https://files.example.com/asha-cv.pdf\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Add my skill", "request": {"method": "POST", "url": "{{baseUrl}}/students/me/skills", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}], "body": {"mode": "raw", "raw": "{\"skillId\":{{skillId}},\"proficiencyLevel\":4}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Add my project", "request": {"method": "POST", "url": "{{baseUrl}}/students/me/projects", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}], "body": {"mode": "raw", "raw": "{\"title\":\"Placement portal\",\"description\":\"Spring Boot + JWT + PostgreSQL placement app\",\"techStack\":\"Java, Spring Boot, PostgreSQL, React\",\"duration\":\"3 months\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Add my certificate", "request": {"method": "POST", "url": "{{baseUrl}}/students/me/certificates", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}], "body": {"mode": "raw", "raw": "{\"title\":\"AWS Cloud Practitioner\",\"issuingOrg\":\"Amazon\",\"issueDate\":\"2026-03-10\"}", "options": {"raw": {"language": "json"}}}}}
+    ]},
+    {"name": "B - Jobs", "item": [
+      {"name": "Post a job", "request": {"method": "POST", "url": "{{baseUrl}}/jobs", "header": [{"key": "Authorization", "value": "Bearer {{companyToken}}"}], "body": {"mode": "raw", "raw": "{\"title\":\"Backend Developer\",\"description\":\"Java microservices role\",\"jobDomain\":\"Engineering\",\"minCgpa\":7.0,\"maxBacklogs\":1,\"eligibleBranches\":[\"CSE\",\"IT\"],\"packageLpa\":12.0,\"deadline\":\"2026-12-31\",\"skills\":[{\"skillId\":1,\"requiredProficiency\":4},{\"skillId\":3,\"requiredProficiency\":3}]}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Search jobs", "request": {"method": "GET", "url": "{{baseUrl}}/jobs?domain=Engineering&active=true&minPackage=5&page=0&size=10", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}]}},
+      {"name": "Apply to job", "request": {"method": "POST", "url": "{{baseUrl}}/jobs/{{jobId}}/apply", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}]}},
+      {"name": "Job applications", "request": {"method": "GET", "url": "{{baseUrl}}/jobs/{{jobId}}/applications?page=0&size=10", "header": [{"key": "Authorization", "value": "Bearer {{companyToken}}"}]}}
+    ]},
+    {"name": "C - College & interviews", "item": [
+      {"name": "Eligible students", "request": {"method": "GET", "url": "{{baseUrl}}/college/jobs/{{jobId}}/eligible?page=0&size=20", "header": [{"key": "Authorization", "value": "Bearer {{collegeToken}}"}]}},
+      {"name": "Define interview process", "request": {"method": "PUT", "url": "{{baseUrl}}/jobs/{{jobId}}/process", "header": [{"key": "Authorization", "value": "Bearer {{collegeToken}}"}], "body": {"mode": "raw", "raw": "{\"rounds\":[{\"round\":\"Aptitude\"},{\"round\":\"Technical\"},{\"round\":\"HR\"}],\"selectionCriteria\":{\"min_cgpa\":7.5,\"branches\":[\"CSE\",\"IT\"],\"max_backlogs\":0}}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "Schedule slot", "request": {"method": "POST", "url": "{{baseUrl}}/processes/{{processId}}/slots", "header": [{"key": "Authorization", "value": "Bearer {{collegeToken}}"}], "body": {"mode": "raw", "raw": "{\"studentId\":{{studentId}},\"roundName\":\"Technical\",\"scheduledAt\":\"2026-10-05T10:00:00Z\",\"venueOrLink\":\"https://meet.example.com/tech1\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "College dashboard", "request": {"method": "GET", "url": "{{baseUrl}}/college/dashboard", "header": [{"key": "Authorization", "value": "Bearer {{collegeToken}}"}]}}
+    ]},
+    {"name": "D - AI & portal", "item": [
+      {"name": "Analyze my profile", "request": {"method": "POST", "url": "{{baseUrl}}/ai/analyze-me", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}]}},
+      {"name": "Generate roadmap", "request": {"method": "POST", "url": "{{baseUrl}}/ai/roadmap", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}], "body": {"mode": "raw", "raw": "{\"targetRole\":\"Backend Developer\"}", "options": {"raw": {"language": "json"}}}}},
+      {"name": "My match for job", "request": {"method": "GET", "url": "{{baseUrl}}/ai/match/{{jobId}}", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}]}},
+      {"name": "Trending skills", "request": {"method": "GET", "url": "{{baseUrl}}/portal/trending?limit=10", "header": [{"key": "Authorization", "value": "Bearer {{studentToken}}"}]}},
+      {"name": "Campus dashboard", "request": {"method": "GET", "url": "{{baseUrl}}/portal/dashboard", "header": [{"key": "Authorization", "value": "Bearer {{collegeToken}}"}]}},
+      {"name": "Verify student skill", "request": {"method": "PUT", "url": "{{baseUrl}}/skills/student-skills/1/verify", "header": [{"key": "Authorization", "value": "Bearer {{collegeToken}}"}], "body": {"mode": "raw", "raw": "{\"approved\":true}", "options": {"raw": {"language": "json"}}}}}
+    ]}
+  ]
+}

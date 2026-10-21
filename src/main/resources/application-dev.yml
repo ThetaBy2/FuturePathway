@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        highlight_sql: true
+
+logging:
+  level:
+    com.futurepathway: DEBUG
+    org.flywaydb: INFO

@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    show-sql: false
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+
+logging:
+  level:
+    com.futurepathway: INFO
+    org.hibernate.SQL: WARN
+    root: WARN
